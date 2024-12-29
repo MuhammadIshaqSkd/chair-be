@@ -9,7 +9,8 @@ class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password",)}),
         ("Personal info", {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
-        ("Reference info", {"fields": ("refer_parent", "token", "token_expiry")}),
+        ("Forget token", {"fields": ( "token", "token_expiry")}),
+        ("business info", {"fields": ("business_name", "business_description")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
     )
     add_fieldsets = (
@@ -22,7 +23,7 @@ class UserAdmin(BaseUserAdmin):
     list_display = (
         "id",
         "email",
-        "username",
+        "business_name",
         "full_name",
         "is_active",
         "is_superuser",
@@ -34,4 +35,4 @@ class UserAdmin(BaseUserAdmin):
         "is_superuser",
     )
 
-    search_fields = ["email", "username", "full_name"]
+    search_fields = ["email", "username", "full_name", "business_name"]

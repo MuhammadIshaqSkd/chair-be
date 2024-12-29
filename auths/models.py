@@ -51,6 +51,8 @@ class User(AbstractUser):
     password = models.CharField(max_length=256, null=True, blank=True)
     username = models.CharField(max_length=60, null=True, blank=True)
     full_name = models.CharField(max_length=60, null=True, blank=True)
+    business_name = models.CharField(max_length=255, blank=True, null=True)
+    business_description = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=30, null=True, blank=True)
     token = models.CharField(max_length=300, null=True, blank=True)
     token_expiry = models.DateTimeField(default=timezone.now)
