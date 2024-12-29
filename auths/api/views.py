@@ -14,8 +14,8 @@ from auths.api.serializers import (
     SignupSerializer,
     TokenObtainOverridePairSerializer
 )
-from auths.helper import get_token_for_user
 from users.api.serializers import UserSerializer
+from auths.helper import get_token_for_user
 
 
 @extend_schema(tags=['Auths'])
@@ -57,5 +57,4 @@ class UserRetrieveUpdateAPIView(APIView):
         # Serialize user data and update the response
         serializer = self.serializer_class(user)
         response_data.update(serializer.data)
-
         return Response(response_data, status=status.HTTP_200_OK)

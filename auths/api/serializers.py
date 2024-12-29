@@ -18,7 +18,6 @@ class SignupSerializer(serializers.ModelSerializer):
             "email",
             "password",
             "username",
-            "business_name",
             "full_name",
             "phone_number",
         ]

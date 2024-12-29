@@ -1,16 +1,18 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
-from auths.models import User
+from auths.models import (
+    User,
+    UserBusinessProfile,
+)
 
 # Register your models here.
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password", "normalized_email")}),
+        (None, {"fields": ("email", "password", "normalized_email", "account_type")}),
         ("Personal info", {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
         ("Forget token", {"fields": ( "token", "token_expiry")}),
-        ("business info", {"fields": ("business_name", "business_description")}),
         ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
     )
     add_fieldsets = (
@@ -23,16 +25,16 @@ class UserAdmin(BaseUserAdmin):
     list_display = (
         "id",
         "email",
-        "business_name",
         "full_name",
+        "account_type",
         "is_active",
         "is_superuser",
     )
 
     list_filter = (
-        "is_staff",
         "is_active",
         "is_superuser",
+        "account_type",
     )
     readonly_fields = ("normalized_email", "token")
 
@@ -40,6 +42,29 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "username",
         "full_name",
-        "business_name",
         "normalized_email",
+    ]
+
+
+@admin.register(UserBusinessProfile)
+class UserBusinessProfileAdmin(admin.ModelAdmin):
+    list_display = [
+        'id',
+        'user',
+        'business_name',
+        'created'
+    ]
+    list_filter = [
+        'created',
+        'modified'
+    ]
+    search_fields = [
+        'user__email',
+        'user__username',
+        'business_name'
+    ]
+    readonly_fields = [
+        'created',
+        'modified',
+        'id',
     ]
