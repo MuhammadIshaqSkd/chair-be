@@ -5,7 +5,8 @@ from rest_framework.routers import DefaultRouter
 
 from auths.api.views import (
     RegistrationsAPIView,
-    MyTokenObtainPairView
+    MyTokenObtainPairView,
+    UserRetrieveUpdateAPIView,
 )
 
 # Router setup
@@ -20,6 +21,8 @@ urlpatterns = [
     # Auths
     path('register/', RegistrationsAPIView.as_view(), name='register'),
     path('login/', MyTokenObtainPairView.as_view(), name='login'),
+    path('verify/token/', UserRetrieveUpdateAPIView.as_view(), name='verify/token/'),
+
 ]
 
 # Include router URLs

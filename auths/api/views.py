@@ -1,15 +1,21 @@
-from drf_spectacular.utils import extend_schema
 from rest_framework import status
+from rest_framework.views import APIView
 from rest_framework.response import Response
-from rest_framework.permissions import AllowAny
 from rest_framework.generics import CreateAPIView
 from rest_framework_simplejwt.views import TokenViewBase
+from rest_framework.permissions import (
+    AllowAny,
+    IsAuthenticated
+)
+
+from drf_spectacular.utils import extend_schema
 
 from auths.api.serializers import (
     SignupSerializer,
     TokenObtainOverridePairSerializer
 )
 from auths.helper import get_token_for_user
+from users.api.serializers import UserSerializer
 
 
 @extend_schema(tags=['Auths'])
@@ -38,3 +44,18 @@ class MyTokenObtainPairView(TokenViewBase):
     token pair to prove the authentication of those credentials.
     """
     serializer_class = TokenObtainOverridePairSerializer
+
+@extend_schema(tags=['Auths'])
+class UserRetrieveUpdateAPIView(APIView):
+    permission_classes = [IsAuthenticated]
+    serializer_class = UserSerializer
+
+
+    def get(self, request, *args, **kwargs):
+        user = request.user
+        response_data = {}
+        # Serialize user data and update the response
+        serializer = self.serializer_class(user)
+        response_data.update(serializer.data)
+
+        return Response(response_data, status=status.HTTP_200_OK)
