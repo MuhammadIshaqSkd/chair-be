@@ -8,11 +8,11 @@ from auths.api.views import (
     MyTokenObtainPairView,
     UserRetrieveUpdateAPIView,
 )
-from users.api.views import UserBusinessProfileViewSet
+from users.api.views import UserRentalProfileViewSet
 
 # Router setup
 router = DefaultRouter()
-router.register(r'business-profile', UserBusinessProfileViewSet, basename='user-business-profile')
+router.register(r'rental-profile', UserRentalProfileViewSet, basename='user-rental-profile')
 
 # URL Patterns
 urlpatterns = [

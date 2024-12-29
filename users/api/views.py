@@ -1,4 +1,5 @@
 from django.shortcuts import get_object_or_404
+from drf_spectacular.utils import extend_schema
 from rest_framework import (
     status,
     viewsets,
@@ -12,7 +13,8 @@ from users.api.serializers import UserBusinessProfileSerializer
 
 # Create your views here.
 
-class UserBusinessProfileViewSet(viewsets.GenericViewSet):
+@extend_schema(tags=['User-Rental Profile'])
+class UserRentalProfileViewSet(viewsets.GenericViewSet):
     serializer_class = UserBusinessProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
 
@@ -21,7 +23,7 @@ class UserBusinessProfileViewSet(viewsets.GenericViewSet):
         business_profile = UserBusinessProfile.objects.filter(user=user)
         if not business_profile.exists():
             return Response(
-                {"detail": "Business profile does not exist for this user."},
+                "Business profile does not exist for this user.",
                 status=status.HTTP_404_NOT_FOUND
             )
         serializer = self.get_serializer(business_profile, many=True)
