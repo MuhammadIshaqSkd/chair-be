@@ -1,0 +1,31 @@
+version: "3.8"
+
+x-common: &common
+  stdin_open: true
+  tty: true
+  restart: unless-stopped
+
+services:
+  django:
+    <<: *common
+    build:
+      context: .
+      args:
+        REQUIREMENT_FILE: $REQUIREMENT_FILE
+    command: >
+      bash -c "python3 manage.py makemigrations &&
+               python3 manage.py migrate &&
+             python3 manage.py runserver 0.0.0.0:8000"
+    ports:
+      - "8000:8000"
+    env_file:
+      - .env
+    volumes:
+      - ./:/code
+      - project_static_volume:/code/static
+      - project_media_volume:/media
+
+
+volumes:
+  project_static_volume:
+  project_media_volume:
