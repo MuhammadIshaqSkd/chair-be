@@ -7,7 +7,7 @@ from auths.models import User
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password",)}),
+        (None, {"fields": ("email", "password", "normalized_email")}),
         ("Personal info", {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
         ("Forget token", {"fields": ( "token", "token_expiry")}),
         ("business info", {"fields": ("business_name", "business_description")}),
@@ -34,5 +34,12 @@ class UserAdmin(BaseUserAdmin):
         "is_active",
         "is_superuser",
     )
+    readonly_fields = ("normalized_email", "token")
 
-    search_fields = ["email", "username", "full_name", "business_name"]
+    search_fields = [
+        "email",
+        "username",
+        "full_name",
+        "business_name",
+        "normalized_email",
+    ]

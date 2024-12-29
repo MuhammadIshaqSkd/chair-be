@@ -48,9 +48,10 @@ class UserManager(BaseUserManager):
 
 class User(AbstractUser):
     email = models.EmailField(unique=True)
-    password = models.CharField(max_length=256, null=True, blank=True)
+    normalized_email = models.CharField(max_length=255, unique=True, blank=True, null=True)
+    password = models.CharField(max_length=256)
     username = models.CharField(max_length=60, null=True, blank=True)
-    full_name = models.CharField(max_length=60, null=True, blank=True)
+    full_name = models.CharField(max_length=60, null=True)
     business_name = models.CharField(max_length=255, blank=True, null=True)
     business_description = models.TextField(blank=True, null=True)
     phone_number = models.CharField(max_length=30, null=True, blank=True)
@@ -58,12 +59,25 @@ class User(AbstractUser):
     token_expiry = models.DateTimeField(default=timezone.now)
     sign_up_with = models.CharField(max_length=60, default="email")
     profile_photo = models.ImageField(upload_to=upload_to_uuid('profile_photos/'), null=True, blank=True)
+
     USERNAME_FIELD = "email"
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
     objects = UserManager()
 
+    @staticmethod
+    def get_normalized_email(email):
+        if not email:
+            return ''
+        local_part, domain_part = email.lower().split('@')
+        return f"{local_part.replace('.', '')}@{domain_part}"
+
+
     def save(self, *args, **kwargs):
+        # Set normalized_email based on the current email
+        if self.email and self.normalized_email is None:
+            self.normalized_email = self.get_normalized_email(self.email)
+
         if not self.username:
             base_username = self.email.split('@')[0]
             new_username = base_username
@@ -79,7 +93,6 @@ class User(AbstractUser):
             self.token = uuid.uuid4().hex[:20]
             self.token_expiry = timezone.now() + timedelta(minutes=30)
         super().save(*args, **kwargs)
-
 
     def delete(self, using=None, keep_parents=False):
         # Delete related profile-image from storage
