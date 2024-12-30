@@ -19,7 +19,7 @@ pipeline {
         stage('Run Docker Commands') {
             steps {
                 script {
-                    echo "Stopping existing sdfsdf.."
+                    echo "Stopping existing f.."
                     echo "Building new images..."
                     echo "Starting containers..."
                 }
