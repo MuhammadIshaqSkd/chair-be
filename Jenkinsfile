@@ -19,9 +19,11 @@ pipeline {
         stage('Run Docker Commands') {
             steps {
                 script {
-                    echo "Stopping existing sdfsdf.."
+                   echo "Stopping existing containers.."
                     echo "Building new images..."
+                    sh 'docker-compose -f docker-compose-dev.yaml build'
                     echo "Starting containers..."
+                    sh 'docker-compose -f docker-compose-dev.yaml up -d'
                 }
             }
         }
