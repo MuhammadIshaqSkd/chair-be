@@ -115,10 +115,10 @@ ALLOWED_ORIGINS = [
     'http://localhost:4300',
     'http://localhost:8000',
     'https://localhost:8000',
-    'https://dev.be.chair-loc.fr/',
-    'http://dev.be.chair-loc.fr/',
-    'https://test.chair-loc.fr/',
-    'http://test.chair-loc.fr/',
+    'https://dev.be.chair-loc.fr',
+    'http://dev.be.chair-loc.fr',
+    'https://test.chair-loc.fr',
+    'http://test.chair-loc.fr',
 ]
 
 CORS_ORIGIN_ALLOW_ALL = True
