@@ -3,7 +3,7 @@ pipeline {
     environment {
         GIT_URL = 'https://github.com/MuhammadIshaqSkd/chair-be'
         BRANCH = 'development'
-        CREDENTIALS_ID = '338'
+        CREDENTIALS_ID = '3388'
     }
     stages {
         stage('Checkout') {
