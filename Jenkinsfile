@@ -4,24 +4,28 @@ pipeline {
         GIT_URL = 'https://github.com/MuhammadIshaqSkd/chair-be'
         BRANCH = 'development'
         CREDENTIALS_ID = '338'
+        PROJECT_DIR = '/var/jenkins_home/chair-be'
     }
     stages {
-        stage('Checkout') {
+         stage('Checkout') {
             steps {
-                git(
-                    branch: "${BRANCH}",
-                    url: "${GIT_URL}",
-                    credentialsId: "${CREDENTIALS_ID}"
-                )
+                dir("${PROJECT_DIR}") {
+                    checkout([
+                        $class: 'GitSCM',
+                        branches: [[name: "${BRANCH}"]],
+                        userRemoteConfigs: [[url: "${GIT_URL}", credentialsId: "${CREDENTIALS_ID}"]]
+                    ])
+                }
             }
         }
-
         stage('Run Docker Commands') {
             steps {
-                script {
-                    echo "Stopping existing sdfsdf.."
+                 script {
+                    echo "Stopping existing containers.."
                     echo "Building new images..."
+                    sh 'docker-compose -f docker-compose-dev.yaml build'
                     echo "Starting containers..."
+                    sh 'docker-compose -f docker-compose-dev.yaml up -d'
                 }
             }
         }
