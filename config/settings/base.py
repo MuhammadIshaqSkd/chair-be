@@ -44,6 +44,8 @@ DJANGO_DEFAULT_APPS = [
 
 LOCAL_APPS = [
     'auths',
+    'users',
+    'ad_listing',
 ]
 
 THIRD_PARTY_APPS = [

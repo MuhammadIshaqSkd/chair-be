@@ -50,7 +50,7 @@ class UserManager(BaseUserManager):
 class User(AbstractUser):
 
     TYPE_CHOICES = (
-        ('user', 'user'),
+        ('freelancer', 'freelancer'),
         ('property_owner', 'property_owner'),
     )
     email = models.EmailField(unique=True)
@@ -63,7 +63,7 @@ class User(AbstractUser):
     token_expiry = models.DateTimeField(default=timezone.now)
     sign_up_with = models.CharField(max_length=60, default="email")
     profile_photo = models.ImageField(upload_to=upload_to_uuid('profile_photos/'), null=True, blank=True)
-    account_type = models.CharField(max_length=60, default="user", choices=TYPE_CHOICES)
+    account_type = models.CharField(max_length=60, default="freelancer", choices=TYPE_CHOICES)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = 'email'
@@ -115,8 +115,12 @@ class User(AbstractUser):
 class UserBusinessProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     business_name = models.CharField(max_length=255)
-    business_description = models.TextField()
+    business_location = models.CharField(max_length=255)
     business_logo = models.ImageField(upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
+    business_website = models.URLField(max_length=255, null=True, blank=True)
+    business_description = models.TextField()
+    total_reviews = models.IntegerField(default=0)
+    total_ratings = models.FloatField(default=0.0)
 
     class Meta:
         verbose_name_plural = "User Business Profiles"
