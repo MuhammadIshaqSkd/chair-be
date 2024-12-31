@@ -43,11 +43,17 @@ class AdListing(TimeStampedModel):
     size = models.CharField(max_length=255)
     availability = models.CharField(max_length=300)
     rental_rate = models.DecimalField(max_digits=10, decimal_places=2)
-    ad_list_images = models.ManyToManyField(AdListImage)
+    ad_images = models.ManyToManyField(AdListImage, related_name="ad_list_images", blank=True)
     location = models.CharField(max_length=300)
     description = models.TextField()
     total_reviews = models.IntegerField(default=0)
     total_ratings = models.FloatField(default=0.0)
+
+    @property
+    def rating(self):
+        if self.total_reviews > 0:
+            return round((self.total_ratings / self.total_reviews), 2)
+        return 0.0
 
     class Meta:
         verbose_name_plural = "Ad Listings"
@@ -56,9 +62,9 @@ class AdListing(TimeStampedModel):
     def save(self, *args, **kwargs):
         # Check for existing instance to detect changes
         if self.pk:
-            old_instance = AdListing.objects.prefetch_related('ad_list_images').get(pk=self.pk)
-            old_images = set(old_instance.ad_list_images.all())
-            new_images = set(self.ad_list_images.all())
+            old_instance = AdListing.objects.filter(id=self.id).first()
+            old_images = set(old_instance.ad_images.all())
+            new_images = set(self.ad_images.all())
 
             # Find images that are removed
             removed_images = old_images - new_images
@@ -70,7 +76,7 @@ class AdListing(TimeStampedModel):
 
     def delete(self, *args, **kwargs):
         # Delete related AdListImage instances and their files
-        for image in self.ad_list_images.all():
+        for image in self.ad_images.all():
             image.delete()
         # Call the parent class delete method
         super().delete(*args, **kwargs)

@@ -31,7 +31,7 @@ class AdListImageAdminView(admin.ModelAdmin):
 
 @admin.register(AdListing)
 class AdListingAdminView(admin.ModelAdmin):
-    filter_horizontal = ('ad_list_images',)
+    filter_horizontal = ('ad_images',)
 
     list_display = [
         'id',

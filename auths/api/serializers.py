@@ -22,6 +22,7 @@ class SignupSerializer(serializers.ModelSerializer):
             "phone_number",
         ]
         extra_kwargs = {"password": {"write_only": True}}
+        read_only_fields = ["id", "username"]
 
     def validate_password(self, value):
         password_validation.validate_password(value, self.instance)
