@@ -1,21 +1,29 @@
 import ast
 
-from drf_spectacular.utils import extend_schema
 from rest_framework import viewsets, status
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated
+from django_filters.rest_framework import DjangoFilterBackend
 
-from ad_listing.helper import process_media
+from drf_spectacular.utils import extend_schema
+
 from auths.models import UserBusinessProfile
 from ad_listing.models import (
     AdListing,
     AdListImage,
+    RentalRequest,
 )
 from ad_listing.api.serializers import (
     AdListingSerializer,
     AdListImageSerializer,
+    RentalRequestSerializer,
+    UpdateRentalRequestSerializer,
 )
 
+from ad_listing.helper import (
+    process_media,
+    CustomPagination
+)
 
 # Create your views here.
 
@@ -24,6 +32,8 @@ class AdListingViewSet(viewsets.GenericViewSet):
     permission_classes = [IsAuthenticated]
     serializer_class = AdListingSerializer
     queryset = AdListing.objects.all()
+    pagination_class = CustomPagination
+
 
     def list(self, request, *args, **kwargs):
         user = request.user
@@ -37,6 +47,10 @@ class AdListingViewSet(viewsets.GenericViewSet):
             ad_list_query = self.queryset.filter(user__id=business_profile.id)
         else:
             ad_list_query = self.queryset.order_by('-created')
+        page = self.paginate_queryset(ad_list_query)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(ad_list_query, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -145,3 +159,86 @@ class AdListingViewSet(viewsets.GenericViewSet):
 
         instance.delete()
         return Response(status=status.HTTP_204_NO_CONTENT)
+
+
+@extend_schema(tags=['Rental Request'])
+class RentalRequestView(viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = RentalRequestSerializer
+    queryset = RentalRequest.objects.all()
+    pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend]
+    filterset_fields = ['status']
+
+    def get_queryset(self):
+        """
+        Return rental requests based on the user's account type.
+        - Property owners: See requests for their own ads.
+        - Freelancers: See their own rental requests.
+        """
+        user = self.request.user
+        if user.account_type == "property_owner":
+            return self.queryset.filter(ad_list__user__user__id=user.id)
+        else:
+            return self.queryset.filter(rental_user=user)
+
+    def create(self, request, *args, **kwargs):
+        """
+        Allow only Freelancer users to create rental requests.
+        Automatically associate the request with the logged-in user.
+        Prevent status field modification during creation.
+        """
+        user = request.user
+        if user.account_type == "property_owner":
+            return Response(
+                {"detail": "Only Freelancer users can request for rental."},
+                status=status.HTTP_403_FORBIDDEN,
+            )
+
+        data = request.data.copy()
+        data.pop("status", None)  # Prevent status updates during creation
+        data["rental_user"] = user.id
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+
+    def partial_update(self, request, *args, **kwargs):
+        """
+        Allow partial updates and validate permissions.
+        Ad owners can update only the status field.
+        """
+        rental_request = self.get_object()
+        serializer_class = UpdateRentalRequestSerializer
+        serializer = serializer_class(
+            rental_request,
+            data=request.data,
+            partial=True,
+            context={"request": request}
+        )
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+        update_status = serializer.validated_data.get("status")
+        return Response(
+            f'Request {update_status} successfully', status=status.HTTP_200_OK
+        )
+
+    def retrieve(self, request, *args, **kwargs):
+        """
+        Retrieve a specific rental request.
+        """
+        rental_request = self.get_object()
+        serializer = self.get_serializer(rental_request)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def list(self, request, *args, **kwargs):
+        """
+        List rental requests for the authenticated user based on account type.
+        """
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)

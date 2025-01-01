@@ -6,9 +6,15 @@ from rest_framework import (
     permissions,
 )
 from rest_framework.response import Response
-from rest_framework.generics import UpdateAPIView, ListAPIView
+from rest_framework.generics import (
+    ListAPIView,
+    UpdateAPIView,
+)
 
-from auths.models import UserBusinessProfile, User
+from auths.models import (
+    User,
+    UserBusinessProfile,
+)
 from users.api.serializers import (
     UserBusinessProfileSerializer,
     UserAccountTypeSerializer,
@@ -53,8 +59,8 @@ class UpdateUserAccountTypeView(UpdateAPIView, ListAPIView):
 
 @extend_schema(tags=['User-Rental Profile'])
 class UserRentalProfileViewSet(viewsets.GenericViewSet):
-    serializer_class = UserBusinessProfileSerializer
     permission_classes = [permissions.IsAuthenticated]
+    serializer_class = UserBusinessProfileSerializer
 
     def list(self, request, *args, **kwargs):
         user = request.user

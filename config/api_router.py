@@ -3,18 +3,26 @@ from django.views.static import serve
 from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
 
-from ad_listing.api.views import AdListingViewSet
+from ad_listing.api.views import (
+    AdListingViewSet,
+    RentalRequestView,
+)
 from auths.api.views import (
     RegistrationsAPIView,
     MyTokenObtainPairView,
     UserRetrieveUpdateAPIView,
 )
-from users.api.views import UserRentalProfileViewSet, UpdateUserAccountTypeView
+from users.api.views import (
+    UserRentalProfileViewSet,
+    UpdateUserAccountTypeView,
+)
 
 # Router setup
 router = DefaultRouter()
 router.register(r'rental-profile', UserRentalProfileViewSet, basename='user-rental-profile')
+router.register(r'rental-request', RentalRequestView, basename='rental-request')
 router.register(r'ad-listing', AdListingViewSet, basename='ad-listing')
+
 
 # URL Patterns
 urlpatterns = [
