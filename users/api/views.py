@@ -18,33 +18,38 @@ from users.api.serializers import (
 # Create your views here.
 @extend_schema(tags=['User Profile'])
 class UpdateUserAccountTypeView(UpdateAPIView, ListAPIView):
+    """
+    Allows authenticated users to update their account type and view their account details.
+    """
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserAccountTypeSerializer
     queryset = User.objects.all()
 
     def get_queryset(self):
         user = self.request.user
-        queryset = User.objects.filter(id=user.id)
-        return queryset
+        return User.objects.filter(id=user.id)
 
     def update(self, request, *args, **kwargs):
-        try:
-            user = request.user
-            business_profile = UserBusinessProfile.objects.filter(user=user).exists()
-            if not business_profile:
-                return Response(
-                    'User does not have a business profile.',
-                    status=status.HTTP_404_NOT_FOUND
-                )
-            serializer = self.get_serializer(user, data=request.data, partial=True)
-            serializer.is_valid(raise_exception=True)
-            account_type = serializer.validated_data.get('account_type')
+        user = self.request.user
+
+        # Check if the user has a business profile
+        if not UserBusinessProfile.objects.filter(user=user).exists():
             return Response(
-                f"Account shifted to {account_type} successfully.",
-                status=status.HTTP_200_OK
+                "User does not have a business profile.",
+                status=status.HTTP_400_BAD_REQUEST
             )
-        except Exception as e:
-            return Response(e, status=status.HTTP_400_BAD_REQUEST)
+
+        # Partially update the user's account type
+        serializer = self.get_serializer(user, data=request.data, partial=True)
+        serializer.is_valid(raise_exception=True)
+        serializer.save()
+
+        # Return success message with updated account type
+        account_type = serializer.validated_data.get('account_type')
+        return Response(
+            f"Account shifted to {account_type} successfully.",
+            status=status.HTTP_200_OK
+        )
 
 @extend_schema(tags=['User-Rental Profile'])
 class UserRentalProfileViewSet(viewsets.GenericViewSet):
