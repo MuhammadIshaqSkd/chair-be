@@ -8,7 +8,7 @@ from rest_framework import (
 from rest_framework.response import Response
 from rest_framework.generics import UpdateAPIView, ListAPIView
 
-from auths.models import UserBusinessProfile
+from auths.models import UserBusinessProfile, User
 from users.api.serializers import (
     UserBusinessProfileSerializer,
     UserAccountTypeSerializer,
@@ -20,13 +20,16 @@ from users.api.serializers import (
 class UpdateUserAccountTypeView(UpdateAPIView, ListAPIView):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserAccountTypeSerializer
+    queryset = User.objects.all()
 
-    def get_object(self):
-        return self.request.user
+    def get_queryset(self):
+        user = self.request.user
+        queryset = User.objects.filter(id=user.id)
+        return queryset
 
     def update(self, request, *args, **kwargs):
         try:
-            user = self.get_object()
+            user = request.user
             business_profile = UserBusinessProfile.objects.filter(user=user).exists()
             if not business_profile:
                 return Response(
