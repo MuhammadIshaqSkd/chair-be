@@ -46,3 +46,13 @@ class UserSerializer(serializers.ModelSerializer):
         data['business_account'] = business_account
         return data
 
+class UserAccountTypeSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = User
+        fields = [
+            "id",
+            "account_type",
+        ]
+        read_only_fields = ['id']
+

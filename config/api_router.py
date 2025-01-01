@@ -9,7 +9,7 @@ from auths.api.views import (
     MyTokenObtainPairView,
     UserRetrieveUpdateAPIView,
 )
-from users.api.views import UserRentalProfileViewSet
+from users.api.views import UserRentalProfileViewSet, UpdateUserAccountTypeView
 
 # Router setup
 router = DefaultRouter()
@@ -26,6 +26,7 @@ urlpatterns = [
     path('register/', RegistrationsAPIView.as_view(), name='register'),
     path('login/', MyTokenObtainPairView.as_view(), name='login'),
     path('verify/token/', UserRetrieveUpdateAPIView.as_view(), name='verify/token/'),
+    path('user/account-type/', UpdateUserAccountTypeView.as_view(), name='update-user-account-type'),
 
 ]
 

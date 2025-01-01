@@ -111,6 +111,8 @@ class User(AbstractUser):
             print(e)
         super().delete(using, keep_parents)
 
+    def __str__(self):
+        return self.email
 
 class UserBusinessProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -134,3 +136,6 @@ class UserBusinessProfile(TimeStampedModel):
         except Exception as e:
             print(e)
         super().delete(using, keep_parents)
+
+    def __str__(self):
+        return f'{self.business_name} - {self.user.email}'
