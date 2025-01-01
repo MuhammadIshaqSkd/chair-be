@@ -7,6 +7,14 @@ from auths.models import (
 
 # Register your models here.
 
+from django.contrib.admin import AdminSite
+
+AdminSite.site_title = 'Admin Panel'
+
+AdminSite.site_header = 'Chair Administration'
+
+AdminSite.index_title = 'Chair Admin Panel'
+
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (

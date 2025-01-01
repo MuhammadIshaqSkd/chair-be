@@ -9,17 +9,18 @@ from drf_spectacular.utils import extend_schema
 
 from auths.models import UserBusinessProfile
 from ad_listing.models import (
+    AdReview,
     AdListing,
     AdListImage,
     RentalRequest,
 )
 from ad_listing.api.serializers import (
+    AdReviewSerializer,
     AdListingSerializer,
     AdListImageSerializer,
     RentalRequestSerializer,
     UpdateRentalRequestSerializer,
 )
-
 from ad_listing.helper import (
     process_media,
     CustomPagination
@@ -242,3 +243,40 @@ class RentalRequestView(viewsets.GenericViewSet):
             return self.get_paginated_response(serializer.data)
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+@extend_schema(tags=['Request Review'])
+class RequestReviewView(viewsets.GenericViewSet):
+    permission_classes = [IsAuthenticated]
+    serializer_class = AdReviewSerializer
+    queryset = AdReview.objects.all()
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        if user.account_type == "property_owner":
+            return self.queryset.filter(user_request__ad_list__user__user__id=user.id)
+        else:
+            return self.queryset.filter(review_user__id=user.id)
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        if page is not None:
+            serializer = self.get_serializer(page, many=True)
+            return self.get_paginated_response(serializer.data)
+        serializer = self.get_serializer(queryset, many=True)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def retrieve(self, request, *args, **kwargs):
+        instance = self.get_object()
+        serializer = self.get_serializer(instance)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+    def create(self, request, *args, **kwargs):
+        user = request.user
+        new_data = request.data.copy()
+        new_data['review_user'] = user.id
+        ad_review_serializer = self.get_serializer(data=new_data)
+        ad_review_serializer.is_valid(raise_exception=True)
+        ad_review_serializer.save()
+        return Response(ad_review_serializer.data, status=status.HTTP_201_CREATED)

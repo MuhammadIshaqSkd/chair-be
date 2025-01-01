@@ -4,6 +4,7 @@ from django.urls import path, re_path
 from rest_framework.routers import DefaultRouter
 
 from ad_listing.api.views import (
+    RequestReviewView,
     AdListingViewSet,
     RentalRequestView,
 )
@@ -22,6 +23,7 @@ router = DefaultRouter()
 router.register(r'rental-profile', UserRentalProfileViewSet, basename='user-rental-profile')
 router.register(r'rental-request', RentalRequestView, basename='rental-request')
 router.register(r'ad-listing', AdListingViewSet, basename='ad-listing')
+router.register(r'request-review', RequestReviewView, basename='request-review')
 
 
 # URL Patterns

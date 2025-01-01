@@ -1,6 +1,37 @@
 from rest_framework import serializers
 
-from ad_listing.models import AdListing, AdListImage, RentalRequest
+from ad_listing.models import (
+    AdReview,
+    AdListing,
+    AdListImage,
+    RentalRequest,
+)
+
+class AdReviewSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = AdReview
+        fields = '__all__'
+        read_only_fields = ['id']
+
+    def validate(self, data):
+        # Ensure user_request is present
+        user_request = data.get('user_request')
+        if not user_request:
+            raise serializers.ValidationError({"user_request": "This field is required."})
+
+        # Check if the rental request status is 'approved'
+        if user_request.status != 'approved':
+            raise serializers.ValidationError(
+                {"user_request": "This rental request has not been approved."}
+            )
+
+        # Check if the request is already reviewed
+        if user_request.is_review:
+            raise serializers.ValidationError(
+                {"user_request": "You have already reviewed this request."}
+            )
+
+        return data
 
 
 class AdListingSerializer(serializers.ModelSerializer):
@@ -13,6 +44,11 @@ class AdListingSerializer(serializers.ModelSerializer):
             'id',
             'rating',
         ]
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        ad_list_reviews = AdReview.objects.filter(user_request__ad_list__id=instance.id)
+        data['ad_list_reviews'] = ad_list_reviews
+        return data
 
 class AdListImageSerializer(serializers.ModelSerializer):
 

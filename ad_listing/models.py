@@ -112,7 +112,6 @@ class RentalRequest(TimeStampedModel):
 class AdReview(TimeStampedModel):
     user_request = models.ForeignKey(RentalRequest, on_delete=models.CASCADE, related_name='user_request')
     review_user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='review_user')
-    owner_user = models.ForeignKey(UserBusinessProfile, on_delete=models.CASCADE, related_name='owner')
     rating = models.IntegerField(default=0)
     feedback = models.TextField()
 
@@ -126,7 +125,7 @@ class AdReview(TimeStampedModel):
             request_query.is_review = True
             request_query.save()
 
-            user_profile_rating = UserBusinessProfile.objects.get(id=self.owner_user.id)
+            user_profile_rating = UserBusinessProfile.objects.get(id=self.user_request.ad_list.user.id)
             user_profile_rating.total_reviews = int(user_profile_rating.total_reviews + 1)
             user_profile_rating.total_ratings = float(
                 (float(user_profile_rating.total_ratings) + float(self.rating)) / user_profile_rating.total_reviews)
