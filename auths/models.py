@@ -59,7 +59,7 @@ class User(AbstractUser):
     password = models.CharField(_("Password"), max_length=256)
     username = models.CharField(_("Username"), max_length=150, null=True)
     full_name = models.CharField(_("Full Name"), max_length=255, null=True)
-    phone_number = models.CharField(_("Phone Number"), max_length=50, blank=True)
+    phone_number = models.CharField(_("Phone Number"), max_length=50, blank=True, null=True)
     token = models.CharField(_("Token"),max_length=300, null=True, blank=True)
     token_expiry = models.DateTimeField(_("Token Expiry"), default=timezone.now)
     sign_up_with = models.CharField(_("Sign Up With"), max_length=60, default="email")
