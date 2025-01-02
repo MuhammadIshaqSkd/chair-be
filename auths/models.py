@@ -3,6 +3,7 @@ import uuid
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
+from django.utils.translation import gettext as _
 from django_extensions.db.models import TimeStampedModel
 from django_uuid_upload import upload_to_uuid
 
@@ -53,17 +54,17 @@ class User(AbstractUser):
         ('freelancer', 'freelancer'),
         ('property_owner', 'property_owner'),
     )
-    email = models.EmailField(unique=True)
-    normalized_email = models.CharField(max_length=255, unique=True, blank=True, null=True)
-    password = models.CharField(max_length=256)
-    username = models.CharField(max_length=60, null=True, blank=True)
-    full_name = models.CharField(max_length=60, null=True)
-    phone_number = models.CharField(max_length=30, null=True, blank=True)
-    token = models.CharField(max_length=300, null=True, blank=True)
-    token_expiry = models.DateTimeField(default=timezone.now)
-    sign_up_with = models.CharField(max_length=60, default="email")
-    profile_photo = models.ImageField(upload_to=upload_to_uuid('profile_photos/'), null=True, blank=True)
-    account_type = models.CharField(max_length=60, default="freelancer", choices=TYPE_CHOICES)
+    email = models.EmailField(_("Email"), unique=True)
+    normalized_email = models.EmailField(_("Normalized Email"), unique=True)
+    password = models.CharField(_("Password"), max_length=256)
+    username = models.CharField(_("Username"), max_length=150, null=True)
+    full_name = models.CharField(_("Full Name"), max_length=255, null=True)
+    phone_number = models.CharField(_("Phone Number"), max_length=50, blank=True)
+    token = models.CharField(_("Token"),max_length=300, null=True, blank=True)
+    token_expiry = models.DateTimeField(_("Token Expiry"), default=timezone.now)
+    sign_up_with = models.CharField(_("Sign Up With"), max_length=60, default="email")
+    profile_photo = models.ImageField(_("Profile Photo"), upload_to=upload_to_uuid('profile_photos/'), null=True, blank=True)
+    account_type = models.CharField(_("Account Type"), max_length=60, default="freelancer", choices=TYPE_CHOICES)
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = 'email'
@@ -125,8 +126,9 @@ class UserBusinessProfile(TimeStampedModel):
     total_ratings = models.FloatField(default=0.0)
 
     class Meta:
-        verbose_name_plural = "User Business Profiles"
-        verbose_name = "User Business Profile"
+        verbose_name = _("User Business Profile")
+        verbose_name_plural = _("User Business Profiles")
+
 
     def delete(self, using=None, keep_parents=False):
         # Delete related business_logo from storage

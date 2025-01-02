@@ -1,4 +1,5 @@
 from django.contrib import admin
+from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
 from auths.models import (
     User,
@@ -6,22 +7,19 @@ from auths.models import (
 )
 
 # Register your models here.
+admin.site.site_title = _('Admin Panel')
+admin.site.site_header = _('Chair Administration')
+admin.site.index_title = _('Chair Admin Panel')
 
-from django.contrib.admin import AdminSite
-
-AdminSite.site_title = 'Admin Panel'
-
-AdminSite.site_header = 'Chair Administration'
-
-AdminSite.index_title = 'Chair Admin Panel'
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
         (None, {"fields": ("email", "password", "normalized_email", "account_type")}),
-        ("Personal info", {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
-        ("Forget token", {"fields": ( "token", "token_expiry")}),
-        ("Permissions", {"fields": ("is_active", "is_staff", "is_superuser")}),
+        (_("Personal Information"), {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
+        (_("Password Reset"), {"fields": ("token", "token_expiry")}),
+        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
+        (_("Important Dates"), {"fields": ("date_joined", "last_login")}),
     )
     add_fieldsets = (
         (None, {
@@ -44,7 +42,12 @@ class UserAdmin(BaseUserAdmin):
         "is_superuser",
         "account_type",
     )
-    readonly_fields = ("normalized_email", "token")
+    readonly_fields = (
+        "token",
+        "last_login",
+        "date_joined",
+        "normalized_email",
+    )
 
     search_fields = [
         "email",

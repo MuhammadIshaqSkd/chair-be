@@ -20,6 +20,7 @@ pipeline {
             steps {
                 script {
                    echo "Stopping existing containers.."
+                    sh 'docker-compose -f docker-compose-dev.yaml down'
                     echo "Building new images..."
                     sh 'docker-compose -f docker-compose-dev.yaml build'
                     echo "Starting containers..."
