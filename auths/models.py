@@ -81,7 +81,7 @@ class User(AbstractUser):
 
     def save(self, *args, **kwargs):
         # Set normalized_email based on the current email
-        if self.email and self.normalized_email is None:
+        if self.email and not self.normalized_email:
             self.normalized_email = self.get_normalized_email(self.email)
 
         if not self.username:
