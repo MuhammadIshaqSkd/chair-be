@@ -3,7 +3,9 @@ from django.db import models
 from django.dispatch import receiver
 from django_uuid_upload import upload_to_uuid
 from django.db.models.signals import post_delete
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
+
 
 from auths.models import User, UserBusinessProfile
 
@@ -13,8 +15,8 @@ class AdListImage(TimeStampedModel):
     image = models.ImageField(upload_to=upload_to_uuid('ad_listing/images/'))
 
     class Meta:
-        verbose_name_plural = "Ad List Images"
-        verbose_name = "Ad List Image"
+        verbose_name_plural = _("Images d'annonces")
+        verbose_name = _("Images d'annonce")
 
     def delete(self, using=None, keep_parents=False):
         try:
@@ -56,8 +58,8 @@ class AdListing(TimeStampedModel):
         return 0.0
 
     class Meta:
-        verbose_name_plural = "Ad Listings"
-        verbose_name = "Ad Listing"
+        verbose_name_plural = _("Liste des annonces")
+        verbose_name = _("Liste des annonces")
 
     def save(self, *args, **kwargs):
         # Check for existing instance to detect changes
@@ -96,8 +98,8 @@ class RentalRequest(TimeStampedModel):
     is_review = models.BooleanField(default=False)
 
     class Meta:
-            verbose_name_plural = "Rental Requests"
-            verbose_name = "Rental Request"
+            verbose_name_plural = _('Demandes de location')
+            verbose_name = _('Demande de location')
 
     def save(self, *args, **kwargs):
         # Prevent users from requesting their own ad
@@ -116,8 +118,8 @@ class AdReview(TimeStampedModel):
     feedback = models.TextField()
 
     class Meta:
-        verbose_name_plural = "Ad Reviews"
-        verbose_name = "Ad Review"
+        verbose_name_plural = _("Examens des annonces")
+        verbose_name = _("Examen des annonces")
 
     def save(self, *args, **kwargs):
         if not self.pk:

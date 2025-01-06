@@ -3,7 +3,7 @@ import uuid
 from django.db import models
 from datetime import timedelta
 from django.utils import timezone
-from django.utils.translation import gettext as _
+from django.utils.translation import gettext_lazy as _
 from django_extensions.db.models import TimeStampedModel
 from django_uuid_upload import upload_to_uuid
 
@@ -126,8 +126,8 @@ class UserBusinessProfile(TimeStampedModel):
     total_ratings = models.FloatField(default=0.0)
 
     class Meta:
-        verbose_name = _("User Business Profile")
-        verbose_name_plural = _("User Business Profiles")
+        verbose_name = _("Profil d'entreprise")
+        verbose_name_plural = _("Profils d'entreprise")
 
 
     def delete(self, using=None, keep_parents=False):
