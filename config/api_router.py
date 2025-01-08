@@ -16,6 +16,8 @@ from auths.api.views import (
 from users.api.views import (
     UserRentalProfileViewSet,
     UpdateUserAccountTypeView,
+    ConversationViewSet,
+    MessageViewSet,
 )
 
 # Router setup
@@ -24,6 +26,9 @@ router.register(r'rental-profile', UserRentalProfileViewSet, basename='user-rent
 router.register(r'rental-request', RentalRequestView, basename='rental-request')
 router.register(r'ad-listing', AdListingViewSet, basename='ad-listing')
 router.register(r'request-review', RequestReviewView, basename='request-review')
+
+router.register(r'conversation-list', ConversationViewSet, basename='conversation-list')
+router.register(r'message-list', MessageViewSet, basename='message-list')
 
 
 # URL Patterns

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from django.shortcuts import get_object_or_404
 from drf_spectacular.utils import extend_schema
 from rest_framework import (
@@ -11,14 +12,22 @@ from rest_framework.generics import (
     UpdateAPIView,
 )
 
+from ad_listing.helper import CustomPagination
 from auths.models import (
     User,
     UserBusinessProfile,
 )
-from users.api.serializers import (
-    UserBusinessProfileSerializer,
-    UserAccountTypeSerializer,
+from users.models import (
+    Message,
+    Conversation,
 )
+from users.api.serializers import (
+    MessageSerializer,
+    ConversationSerializer,
+    UserAccountTypeSerializer,
+    UserBusinessProfileSerializer,
+)
+from users.helper import mark_messages_as_read
 
 
 # Create your views here.
@@ -94,4 +103,72 @@ class UserRentalProfileViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(obj, data=request.data, partial=True)
         serializer.is_valid(raise_exception=True)
         serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['User Inbox Messages'])
+class ConversationViewSet(viewsets.GenericViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = ConversationSerializer
+    queryset = Conversation.objects.all()
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        return Conversation.objects.filter(Q(freelancer=user) | Q(owner=user)).order_by('-created')
+
+    def list(self, request, *args, **kwargs):
+        queryset = self.get_queryset()
+        page = self.paginate_queryset(queryset)
+        serializer = self.get_serializer(
+            queryset,
+            many=True,
+            context={
+                "request": request,
+                "list": "conversation_list"
+            })
+        if page:
+            return self.get_paginated_response(serializer.data)
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
+
+@extend_schema(tags=['User Inbox Messages'])
+class MessageViewSet(viewsets.GenericViewSet):
+    permission_classes = [permissions.IsAuthenticated]
+    serializer_class = MessageSerializer
+    queryset = Message.objects.all()
+    pagination_class = CustomPagination
+
+    def get_queryset(self):
+        user = self.request.user
+        queryset = Message.objects.filter(
+            Q(conversation__freelancer=user) | Q(conversation__owner=user)
+        ).order_by('-created')
+        return queryset
+
+    def list(self, request, *args, **kwargs):
+        conversation_id = request.query_params.get('conversation_id', None)
+        if not conversation_id:
+            return Response('conversation_id is required', status=status.HTTP_400_BAD_REQUEST)
+
+        # Filter messages for the conversation
+        message_query = self.queryset.filter(conversation__id=conversation_id)
+
+        # Validate if the conversation exists and belongs to the user
+        if self.queryset.exists() and not message_query.exists():
+            return Response('Invalid Conversation ID', status=status.HTTP_404_NOT_FOUND)
+
+        # Paginate the queryset
+        page = self.paginate_queryset(message_query)
+        serializer = self.get_serializer(
+            page if page is not None else message_query,
+            many=True,
+            context={"request": request, "list": "message_list"}
+        )
+
+        # Mark messages as read
+        mark_messages_as_read(message_query)
+
+        if page:
+            return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
