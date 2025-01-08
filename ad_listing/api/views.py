@@ -8,6 +8,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 
 from drf_spectacular.utils import extend_schema
 
+from ad_listing.filters import AdListingFilter
 from auths.models import UserBusinessProfile
 from ad_listing.models import (
     AdReview,
@@ -36,7 +37,7 @@ class AdListingViewSet(viewsets.GenericViewSet):
     queryset = AdListing.objects.all()
     pagination_class = CustomPagination
     filter_backends = [DjangoFilterBackend, SearchFilter]
-    filterset_fields = ['location', 'space_type']
+    filterset_class = AdListingFilter
     search_fields = ['title', 'location', 'space_type', 'availability']
 
 
