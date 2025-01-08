@@ -2,6 +2,7 @@ import ast
 
 from rest_framework import viewsets, status
 from rest_framework.response import Response
+from rest_framework.filters import SearchFilter
 from rest_framework.permissions import IsAuthenticated
 from django_filters.rest_framework import DjangoFilterBackend
 
@@ -34,6 +35,9 @@ class AdListingViewSet(viewsets.GenericViewSet):
     serializer_class = AdListingSerializer
     queryset = AdListing.objects.all()
     pagination_class = CustomPagination
+    filter_backends = [DjangoFilterBackend, SearchFilter]
+    filterset_fields = ['location', 'space_type']
+    search_fields = ['title', 'location', 'space_type', 'availability']
 
 
     def list(self, request, *args, **kwargs):
@@ -48,6 +52,8 @@ class AdListingViewSet(viewsets.GenericViewSet):
             ad_list_query = self.queryset.filter(user__id=business_profile.id)
         else:
             ad_list_query = self.queryset.order_by('-created')
+        # Apply filtering and searching
+        ad_list_query = self.filter_queryset(ad_list_query)
         page = self.paginate_queryset(ad_list_query)
         if page is not None:
             serializer = self.get_serializer(page, many=True)

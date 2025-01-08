@@ -15,7 +15,7 @@ admin.site.index_title = _('Chair Admin Panel')
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password", "normalized_email", "account_type")}),
+        (None, {"fields": ("email", "password", "normalized_email", "account_type", "profession")}),
         (_("Personal Information"), {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
         (_("Password Reset"), {"fields": ("token", "token_expiry")}),
         (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
@@ -24,7 +24,7 @@ class UserAdmin(BaseUserAdmin):
     add_fieldsets = (
         (None, {
             "classes": ("wide",),
-            "fields": ("email", "password1", "password2", "full_name"),
+            "fields": ("email", "password1", "password2", "full_name", "profession"),
         }),
     )
 
@@ -53,6 +53,7 @@ class UserAdmin(BaseUserAdmin):
         "email",
         "username",
         "full_name",
+        "profession",
         "normalized_email",
     ]
 
@@ -72,7 +73,10 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
     search_fields = [
         'user__email',
         'user__username',
-        'business_name'
+        'business_name',
+        'user__full_name',
+        'user__profession',
+        'workspace',
     ]
     readonly_fields = [
         'created',

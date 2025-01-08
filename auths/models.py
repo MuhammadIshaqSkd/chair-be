@@ -55,6 +55,7 @@ class User(AbstractUser):
         ('property_owner', 'property_owner'),
     )
     email = models.EmailField(_("Email"), unique=True)
+    profession = models.CharField(_("Profession"), max_length=255, null=True)
     normalized_email = models.EmailField(_("Normalized Email"), unique=True)
     password = models.CharField(_("Password"), max_length=256)
     username = models.CharField(_("Username"), max_length=150, null=True)
@@ -117,13 +118,14 @@ class User(AbstractUser):
 
 class UserBusinessProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    business_name = models.CharField(max_length=255)
-    business_location = models.CharField(max_length=255)
-    business_logo = models.ImageField(upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
-    business_website = models.URLField(max_length=255, null=True, blank=True)
-    business_description = models.TextField()
-    total_reviews = models.IntegerField(default=0)
-    total_ratings = models.FloatField(default=0.0)
+    business_name = models.CharField(_('Business Name'), max_length=255)
+    business_location = models.CharField(_('Business Location'), max_length=255)
+    workspace = models.CharField(_('WorkSpace'), max_length=255)
+    business_logo = models.ImageField(_('Business Logo'), upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
+    business_website = models.URLField(_('Business Website'), max_length=255, null=True, blank=True)
+    business_description = models.TextField(_('Business Description'))
+    total_reviews = models.IntegerField(_('Total Reviews'), default=0)
+    total_ratings = models.FloatField(_('Total Rating'), default=0.0)
 
     class Meta:
         verbose_name = _("Profil d'entreprise")

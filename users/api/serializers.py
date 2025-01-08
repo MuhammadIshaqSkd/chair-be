@@ -34,6 +34,7 @@ class UserSerializer(serializers.ModelSerializer):
             "email",
             "full_name",
             "is_active",
+            "profession",
             "account_type",
             "sign_up_with",
             "profile_photo",
