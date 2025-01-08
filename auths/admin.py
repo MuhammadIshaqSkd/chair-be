@@ -7,18 +7,24 @@ from auths.models import (
 )
 
 # Register your models here.
-admin.site.site_title = _('Admin Panel')
-admin.site.site_header = _('Chair Administration')
-admin.site.index_title = _('Chair Admin Panel')
+admin.site.site_title = _("Panneau d'administration")
+admin.site.site_header = _("Administration de la chaire")
+admin.site.index_title = _("Panneau d'administration du président")
 
 
 @admin.register(User)
 class UserAdmin(BaseUserAdmin):
     fieldsets = (
-        (None, {"fields": ("email", "password", "normalized_email", "account_type", "profession")}),
+        (None, {"fields": (
+            "email",
+            "password",
+            "sign_up_with",
+            "account_type",
+            "profession",
+        )}),
         (_("Personal Information"), {"fields": ("username", "full_name", "profile_photo", "phone_number")}),
-        (_("Password Reset"), {"fields": ("token", "token_expiry")}),
-        (_("Permissions"), {"fields": ("is_active", "is_staff", "is_superuser")}),
+        # (_("Password Reset"), {"fields": ("token", "token_expiry")}),
+        (_("Permissions"), {"fields": ("is_active", )}),
         (_("Important Dates"), {"fields": ("date_joined", "last_login")}),
     )
     add_fieldsets = (
@@ -34,19 +40,20 @@ class UserAdmin(BaseUserAdmin):
         "full_name",
         "account_type",
         "is_active",
-        "is_superuser",
     )
 
-    list_filter = (
-        "is_active",
-        "is_superuser",
-        "account_type",
-    )
+    # list_filter = (
+    #     "is_active",
+    #     "account_type",
+    #       "sign_up_with"
+    # )
+    list_filter =  []
     readonly_fields = (
         "token",
         "last_login",
         "date_joined",
         "normalized_email",
+        "sign_up_with",
     )
 
     search_fields = [
@@ -66,18 +73,18 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
         'business_name',
         'created'
     ]
-    list_filter = [
-        'created',
-        'modified'
-    ]
-    search_fields = [
-        'user__email',
-        'user__username',
-        'business_name',
-        'user__full_name',
-        'user__profession',
-        'workspace',
-    ]
+    # list_filter = [
+    #     'created',
+    #     'modified'
+    # ]
+    # search_fields = [
+    #     'user__email',
+    #     'user__username',
+    #     'business_name',
+    #     'user__full_name',
+    #     'user__profession',
+    #     'workspace',
+    # ]
     readonly_fields = [
         'created',
         'modified',

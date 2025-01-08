@@ -1,0 +1,8 @@
+/* custom_dark_mode.css */
+/*body.dark-mode {*/
+/*    color: #ffffff; !* Ensure text color is white in dark mode *!*/
+/*}*/
+.sidebar-dark-maroon .nav-link,
+.navbar-dark .navbar-nav .nav-link {
+    color: #ffffff !important; /* Force sidebar and navbar text to white */
+}

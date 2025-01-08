@@ -4,6 +4,7 @@ from django.db import models
 from datetime import timedelta
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.core.exceptions import ValidationError
 from django_extensions.db.models import TimeStampedModel
 from django_uuid_upload import upload_to_uuid
 
@@ -49,27 +50,37 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractUser):
-
     TYPE_CHOICES = (
-        ('freelancer', 'freelancer'),
-        ('property_owner', 'property_owner'),
+        ('Freelancer', 'Freelancer'),
+        ('Owner', 'Owner'),
     )
     email = models.EmailField(_("Email"), unique=True)
-    profession = models.CharField(_("Profession"), max_length=255, null=True)
-    normalized_email = models.EmailField(_("Normalized Email"), unique=True)
+    profession = models.CharField(_("Profession"), max_length=255, null=True, blank=True)
+    normalized_email = models.EmailField(_("Normalized Email"), unique=True, blank=True)
     password = models.CharField(_("Password"), max_length=256)
-    username = models.CharField(_("Username"), max_length=150, null=True)
-    full_name = models.CharField(_("Full Name"), max_length=255, null=True)
+    username = models.CharField(_("Username"), max_length=150, null=True, blank=True)
+    full_name = models.CharField(_("Full Name"), max_length=255, null=True, blank=True)
     phone_number = models.CharField(_("Phone Number"), max_length=50, blank=True, null=True)
-    token = models.CharField(_("Token"),max_length=300, null=True, blank=True)
+    token = models.CharField(_("Token"), max_length=300, null=True, blank=True)
     token_expiry = models.DateTimeField(_("Token Expiry"), default=timezone.now)
     sign_up_with = models.CharField(_("Sign Up With"), max_length=60, default="email")
-    profile_photo = models.ImageField(_("Profile Photo"), upload_to=upload_to_uuid('profile_photos/'), null=True, blank=True)
-    account_type = models.CharField(_("Account Type"), max_length=60, default="freelancer", choices=TYPE_CHOICES)
+    profile_photo = models.ImageField(
+        _("Profile Photo"),
+        upload_to=upload_to_uuid('profile_photos/'),
+        null=True,
+        blank=True
+    )
+    account_type = models.CharField(
+        _("Account Type"),
+        max_length=60,
+        default="Freelancer",
+        choices=TYPE_CHOICES
+    )
 
     USERNAME_FIELD = "email"
     EMAIL_FIELD = 'email'
     REQUIRED_FIELDS = []
+
     objects = UserManager()
 
     @staticmethod
@@ -79,38 +90,55 @@ class User(AbstractUser):
         local_part, domain_part = email.lower().split('@')
         return f"{local_part.replace('.', '')}@{domain_part}"
 
+    def clean(self):
+        """
+        Perform custom validations here.
+        """
+        # Ensure the normalized_email is unique
+        if self.email:
+            normalized_email = self.get_normalized_email(self.email)
+            if User.objects.exclude(pk=self.pk).filter(normalized_email=normalized_email).exists():
+                raise ValidationError(_("A user with this email already exists."))
 
-    def save(self, *args, **kwargs):
-        # Set normalized_email based on the current email
-        if self.email and not self.normalized_email:
-            self.normalized_email = self.get_normalized_email(self.email)
+        # Validate business profile for "Owner" account type
+        if self.account_type.lower() == "owner":
+            if not UserBusinessProfile.objects.filter(user=self).exists():
+                raise ValidationError(_("User Business Profile does not exist for an Owner account."))
 
+        # Ensure username is unique
         if not self.username:
             base_username = self.email.split('@')[0]
             new_username = base_username
             counter = 1
-            # Check if the username exists and increment until unique
-            while User.objects.filter(username=new_username).exists():
+            while User.objects.filter(username=new_username).exclude(pk=self.pk).exists():
                 new_username = f"{base_username}{counter}"
                 counter += 1
             self.username = new_username
 
+    def save(self, *args, **kwargs):
+        # Normalize email
+        if self.email:
+            self.normalized_email = self.get_normalized_email(self.email)
+
         # Generate token if it's a new instance or token is None
-        if not self.pk or self.token is None:
+        if not self.pk or not self.token:
             self.token = uuid.uuid4().hex[:20]
             self.token_expiry = timezone.now() + timedelta(minutes=30)
-        if self.account_type == "property_owner":
-            if not UserBusinessProfile.objects.filter(user=self).exists():
-                raise Exception("User Business Profile does not exist")
+
+        # Validate the object
+        self.clean()
+
         super().save(*args, **kwargs)
 
     def delete(self, using=None, keep_parents=False):
-        # Delete related profile-image from storage
+        """
+        Delete related profile-photo from storage.
+        """
         try:
-            if self.profile_photo.name:
+            if self.profile_photo and self.profile_photo.name:
                 self.profile_photo.storage.delete(self.profile_photo.name)
         except Exception as e:
-            print(e)
+            print(f"Error deleting profile photo: {e}")
         super().delete(using, keep_parents)
 
     def __str__(self):
