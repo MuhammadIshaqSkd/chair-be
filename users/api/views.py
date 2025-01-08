@@ -93,7 +93,7 @@ class UserRentalProfileViewSet(viewsets.GenericViewSet):
         serializer.is_valid(raise_exception=True)
         serializer.save(user=user)
         user = request.user
-        user.account_type = "property_owner"
+        user.account_type = "Owner"
         user.save()
         return Response(serializer.data, status=status.HTTP_201_CREATED)
 

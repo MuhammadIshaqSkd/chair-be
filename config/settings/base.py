@@ -273,11 +273,11 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
      # Title on the brand, and login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
     # "site_header": "Chair Administration",
     # Logo to use for your site, must be present in static files, used for brand on top left
-    # "site_logo": "books/img/logo.png",
+    "site_logo": "img/logo_dark2.png",
     # Relative path to logo for your site, used for login logo (must be present in static files. Defaults to site_logo)
-    # "login_logo": "books/img/logo-login.png",
+    "login_logo": "img/logo.png",
     # Logo to use for login form in dark themes (must be present in static files. Defaults to login_logo)
-    # "login_logo_dark": "books/img/logo-login-dark-mode.png",
+    "login_logo_dark": "img/logo_dark.png",
     # CSS classes that are applied to the logo
     "site_logo_classes": None,
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
@@ -300,10 +300,10 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
         {"name": "Home", "url": "admin:index", "permissions": ["auth.view_user"]},
         # external url that opens in a new window (Permissions can be added)
         # model admin to link to (Permissions checked against model)
-        {"model": "auths.User"},
+        # {"model": "auths.User"},
         # App with dropdown menu to all its models pages (Permissions checked against models)
-        {"app": "ad_listing"},
-        {"app": "auths"},
+        # {"app": "ad_listing"},
+        # {"app": "auths"},
     ],
 
     #############
@@ -314,7 +314,7 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
     # Whether to aut expand the menu
     "navigation_expanded": True,
     # Hide these apps when generating side menu e.g (auth)
-    "hide_apps": ['auth'],
+    "hide_apps": ['auth', 'ad_listing'],
     # Hide these models when generating side menu (e.g auth.user)
     "hide_models": [],
 
@@ -347,7 +347,7 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
     # UI Tweaks #
     #############
     # Relative paths to custom CSS/JS scripts (must be present in static files)
-    "custom_css": None,
+    "custom_css": "admin/css/custom_dark_mode.css",
     "custom_js": None,
     # Whether to show the UI customizer on the sidebar
     # "show_ui_builder": True,
@@ -372,28 +372,29 @@ JAZZMIN_UI_TWEAKS = {
     "body_small_text": True,
     "brand_small_text": False,
     "brand_colour": False,
-    "accent": "accent-lime",
+    "accent": "accent-navy",
     "navbar": "navbar-dark",
     "no_navbar_border": False,
     "navbar_fixed": True,
     "layout_boxed": False,
     "footer_fixed": False,
     "sidebar_fixed": True,
-    "sidebar": "sidebar-dark-success",
+    "sidebar": "sidebar-dark-maroon",
     "sidebar_nav_small_text": False,
     "sidebar_disable_expand": False,
     "sidebar_nav_child_indent": False,
     "sidebar_nav_compact_style": False,
     "sidebar_nav_legacy_style": False,
     "sidebar_nav_flat_style": True,
-    "theme": "cyborg",
-    "dark_mode_theme": None,
+    "theme": "flatly",
+    "dark_mode_theme": "darkly",  # Set a dark mode theme like 'darkly'
+    "custom_css": "admin/css/custom_dark_mode.css",  # Link to custom CSS for finer control
     "button_classes": {
         "primary": "btn-primary",
-        "secondary": "btn-secondary",
-        "info": "btn-info",
-        "warning": "btn-warning",
-        "danger": "btn-danger",
-        "success": "btn-success"
+        "secondary": "btn-outline-secondary",
+        "info": "btn-outline-info",
+        "warning": "btn-outline-warning",
+        "danger": "btn-outline-danger",
+        "success": "btn-outline-success"
     }
 }

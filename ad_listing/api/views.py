@@ -43,7 +43,7 @@ class AdListingViewSet(viewsets.GenericViewSet):
 
     def list(self, request, *args, **kwargs):
         user = request.user
-        if user.account_type == "property_owner":
+        if user.account_type == "Owner":
             business_profile = UserBusinessProfile.objects.filter(user=user).first()
             if not business_profile:
                 return Response(
@@ -66,7 +66,7 @@ class AdListingViewSet(viewsets.GenericViewSet):
         user = request.user
         instance = self.get_object()
 
-        if user.account_type == "property_owner":
+        if user.account_type == "Owner":
             business_profile = UserBusinessProfile.objects.filter(user=user).first()
             if not business_profile:
                 return Response(
@@ -185,7 +185,7 @@ class RentalRequestView(viewsets.GenericViewSet):
         - Freelancers: See their own rental requests.
         """
         user = self.request.user
-        if user.account_type == "property_owner":
+        if user.account_type == "Owner":
             return self.queryset.filter(ad_list__user__user__id=user.id)
         else:
             return self.queryset.filter(rental_user=user)
@@ -197,7 +197,7 @@ class RentalRequestView(viewsets.GenericViewSet):
         Prevent status field modification during creation.
         """
         user = request.user
-        if user.account_type == "property_owner":
+        if user.account_type == "Owner":
             return Response(
                 {"detail": "Only Freelancer users can request for rental."},
                 status=status.HTTP_403_FORBIDDEN,
@@ -260,7 +260,7 @@ class RequestReviewView(viewsets.GenericViewSet):
 
     def get_queryset(self):
         user = self.request.user
-        if user.account_type == "property_owner":
+        if user.account_type == "Owner":
             return self.queryset.filter(user_request__ad_list__user__user__id=user.id)
         else:
             return self.queryset.filter(review_user__id=user.id)
