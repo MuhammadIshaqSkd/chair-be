@@ -7,6 +7,9 @@ from ad_listing.models import (
     AdListImage,
     RentalRequest,
 )
+from auths.admin import custom_admin_site
+
+
 # Register your models here.
 
 @admin.register(AdListImage)
@@ -29,7 +32,6 @@ class AdListImageAdminView(admin.ModelAdmin):
     ]
     list_filter = ['created', 'modified']
 
-@admin.register(AdListing)
 class AdListingAdminView(admin.ModelAdmin):
     filter_horizontal = ('ad_images',)
 
@@ -62,7 +64,6 @@ class AdListingAdminView(admin.ModelAdmin):
     ]
 
 
-@admin.register(RentalRequest)
 class RentalRequestAdminView(admin.ModelAdmin):
     list_display = [
         'rental_user',
@@ -80,7 +81,6 @@ class RentalRequestAdminView(admin.ModelAdmin):
     ]
     readonly_fields = ['id', 'is_review']
 
-@admin.register(AdReview)
 class AdReviewAdminView(admin.ModelAdmin):
 
     list_display = [
@@ -88,3 +88,8 @@ class AdReviewAdminView(admin.ModelAdmin):
         'user_request',
         'rating',
     ]
+
+custom_admin_site.register(AdReview, AdReviewAdminView)
+custom_admin_site.register(AdListing, AdListingAdminView)
+custom_admin_site.register(AdListImage, AdListImageAdminView)
+custom_admin_site.register(RentalRequest, RentalRequestAdminView)

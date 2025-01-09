@@ -22,9 +22,10 @@ from django.views import defaults as default_views
 from django.urls import include, path, re_path as urls
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from Utils.defualt_route import HealthCheckAPIView
+from auths.admin import custom_admin_site
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', custom_admin_site.urls),
     path("", HealthCheckAPIView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # API URLS

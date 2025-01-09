@@ -925,3 +925,13 @@ body.jazzmin-login-page {
     float: left;
     width: 100%;
 }
+
+.card {
+    justify-content: space-around;
+    text-align: center;
+    padding: 15px;
+}
+.dashboard-cards{
+    width: 100%;
+    justify-content: space-between;
+}

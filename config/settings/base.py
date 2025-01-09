@@ -271,7 +271,9 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 ########################
 JAZZMIN_SETTINGS: Dict[str, Any] = {
      # Title on the brand, and login screen (19 chars max) (defaults to current_admin_site.site_header if absent or None)
-    # "site_header": "Chair Administration",
+    "site_header": "Chairloc Administrateur",
+    'site_title': 'Tableau de bord',
+    "site_brand": " Chairloc Administrateur",
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "img/logo_dark2.png",
     # Relative path to logo for your site, used for login logo (must be present in static files. Defaults to site_logo)
@@ -283,7 +285,7 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
     # "site_icon": "books/img/icon.png",
     # Welcome text on the login screen
-    "welcome_sign": "Welcome to the Chair Admin Portal",
+    "welcome_sign": "Bienvenue sur le portail d'administration du fauteuil",
     # Copyright on the footer
     "copyright": "Chair Ltd",
     # List of model admins to search from the search bar, search bar omitted if excluded
