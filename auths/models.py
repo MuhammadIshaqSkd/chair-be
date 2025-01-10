@@ -57,21 +57,21 @@ class User(AbstractUser):
     email = models.EmailField(_("Email"), unique=True)
     profession = models.CharField(_("Profession"), max_length=255, null=True, blank=True)
     normalized_email = models.EmailField(_("Normalized Email"), unique=True, blank=True)
-    password = models.CharField(_("Password"), max_length=256)
-    username = models.CharField(_("Username"), max_length=150, null=True, blank=True)
-    full_name = models.CharField(_("Full Name"), max_length=255, null=True, blank=True)
-    phone_number = models.CharField(_("Phone Number"), max_length=50, blank=True, null=True)
+    password = models.CharField(_("Mot de passe"), max_length=256)
+    username = models.CharField(_("Nom d'utilisateur"), max_length=150, null=True, blank=True)
+    full_name = models.CharField(_("Nom et prénom"), max_length=255, null=True, blank=True)
+    phone_number = models.CharField(_("Numéro de contact"), max_length=50, blank=True, null=True)
     token = models.CharField(_("Token"), max_length=300, null=True, blank=True)
     token_expiry = models.DateTimeField(_("Token Expiry"), default=timezone.now)
-    sign_up_with = models.CharField(_("Sign Up With"), max_length=60, default="email")
+    sign_up_with = models.CharField(_("Inscrivez-vous avec"), max_length=60, default="email")
     profile_photo = models.ImageField(
-        _("Profile Photo"),
+        _("Photo de profil"),
         upload_to=upload_to_uuid('profile_photos/'),
         null=True,
         blank=True
     )
     account_type = models.CharField(
-        _("Account Type"),
+        _("Type de compte"),
         max_length=60,
         default="Freelancer",
         choices=TYPE_CHOICES
@@ -152,6 +152,8 @@ class UserBusinessProfile(TimeStampedModel):
     business_logo = models.ImageField(_("Logo d'entreprise"), upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
     business_website = models.URLField(_("Site Web d'entreprise"), max_length=255, null=True, blank=True)
     business_description = models.TextField(_("Description de l'entreprise"))
+    business_email = models.EmailField(_("E-mail de contact"), max_length=255, null=True, blank=True)
+    phone_number = models.CharField(_("Numéro de contact"), max_length=150)
     total_reviews = models.IntegerField(_("Total des avis"), default=0)
     total_ratings = models.FloatField(_("Note totale"), default=0.0)
     rating = models.FloatField(_("notation"), default=0.0)
