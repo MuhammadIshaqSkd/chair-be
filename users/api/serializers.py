@@ -8,6 +8,7 @@ class UserBusinessProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'user',
+            'workspace',
             'business_name',
             'business_logo',
             'business_website',
