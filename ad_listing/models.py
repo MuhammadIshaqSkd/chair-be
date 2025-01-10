@@ -50,12 +50,7 @@ class AdListing(TimeStampedModel):
     description = models.TextField()
     total_reviews = models.IntegerField(default=0)
     total_ratings = models.FloatField(default=0.0)
-
-    @property
-    def rating(self):
-        if self.total_reviews > 0:
-            return round((self.total_ratings / self.total_reviews), 2)
-        return 0.0
+    rating = models.FloatField(default=0.0)
 
     class Meta:
         verbose_name_plural = _("Liste des annonces")
@@ -72,6 +67,8 @@ class AdListing(TimeStampedModel):
             removed_images = old_images - new_images
             for image in removed_images:
                 image.delete()
+        if self.total_reviews > 0:
+            return round((self.total_ratings / self.total_reviews), 2)
 
         # Save the current instance
         super().save(**kwargs)
@@ -129,14 +126,12 @@ class AdReview(TimeStampedModel):
 
             user_profile_rating = UserBusinessProfile.objects.get(id=self.user_request.ad_list.user.id)
             user_profile_rating.total_reviews = int(user_profile_rating.total_reviews + 1)
-            user_profile_rating.total_ratings = float(
-                (float(user_profile_rating.total_ratings) + float(self.rating)) / user_profile_rating.total_reviews)
+            user_profile_rating.total_ratings = float(user_profile_rating.total_ratings) + float(self.rating)
             user_profile_rating.save()
 
             ad_rating = AdListing.objects.get(id=self.user_request.ad_list.id)
             ad_rating.total_reviews = int(ad_rating.total_reviews + 1)
-            ad_rating.total_ratings = float(
-                (float(ad_rating.total_ratings) + float(self.rating)) / ad_rating.total_reviews)
+            ad_rating.total_ratings = float(ad_rating.total_ratings) + float(self.rating)
             ad_rating.save()
 
         super().save(**kwargs)

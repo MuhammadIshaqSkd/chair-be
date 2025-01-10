@@ -146,18 +146,23 @@ class User(AbstractUser):
 
 class UserBusinessProfile(TimeStampedModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
-    business_name = models.CharField(_('Business Name'), max_length=255)
-    business_location = models.CharField(_('Business Location'), max_length=255)
-    workspace = models.CharField(_('WorkSpace'), max_length=255)
-    business_logo = models.ImageField(_('Business Logo'), upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
-    business_website = models.URLField(_('Business Website'), max_length=255, null=True, blank=True)
-    business_description = models.TextField(_('Business Description'))
-    total_reviews = models.IntegerField(_('Total Reviews'), default=0)
-    total_ratings = models.FloatField(_('Total Rating'), default=0.0)
+    business_name = models.CharField(_("Nom de l'entreprise"), max_length=255)
+    business_location = models.CharField(_("Emplacement de l'entreprise"), max_length=255)
+    workspace = models.CharField(_("Espace de travail"), max_length=255)
+    business_logo = models.ImageField(_("Logo d'entreprise"), upload_to=upload_to_uuid('business_logos/'), null=True, blank=True)
+    business_website = models.URLField(_("Site Web d'entreprise"), max_length=255, null=True, blank=True)
+    business_description = models.TextField(_("Description de l'entreprise"))
+    total_reviews = models.IntegerField(_("Total des avis"), default=0)
+    total_ratings = models.FloatField(_("Note totale"), default=0.0)
+    rating = models.FloatField(_("notation"), default=0.0)
 
     class Meta:
-        verbose_name = _("Profil d'entreprise")
-        verbose_name_plural = _("Profils d'entreprise")
+        verbose_name = _("Profil du propriétaire")
+        verbose_name_plural = _("Profils de propriétaires")
+
+    def save(self, *args, **kwargs):
+        self.rating = round((self.total_ratings / self.total_reviews), 2) if self.total_reviews > 0 else 0.0
+        super().save(**kwargs)
 
 
     def delete(self, using=None, keep_parents=False):

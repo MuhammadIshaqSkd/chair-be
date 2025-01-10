@@ -97,8 +97,22 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
         'id',
         'user',
         'business_name',
+        'rating',
         'created'
     ]
+    fieldsets = (
+        (None, {"fields": (
+            "user",
+            "rating",
+            "business_name",
+            "business_location",
+            "business_description",
+            "business_logo",
+            "business_website",
+        )}),
+
+        (_("Important Dates"), {"fields": ("created", "modified")}),
+    )
     # list_filter = [
     #     'created',
     #     'modified'
@@ -114,6 +128,9 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
     readonly_fields = [
         'created',
         'modified',
+        'rating',
+        'total_ratings',
+        'total_reviews',
         'id',
     ]
 

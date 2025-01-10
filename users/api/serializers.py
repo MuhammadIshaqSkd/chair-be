@@ -8,6 +8,7 @@ class UserBusinessProfileSerializer(serializers.ModelSerializer):
         fields = [
             'id',
             'user',
+            'rating',
             'workspace',
             'business_name',
             'business_logo',
@@ -15,7 +16,7 @@ class UserBusinessProfileSerializer(serializers.ModelSerializer):
             'business_location',
             'business_description',
         ]
-        read_only_fields = ['id', 'user']
+        read_only_fields = ['id', 'user', 'rating']
 
     @staticmethod
     def validate_business_name(value):
