@@ -108,9 +108,8 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
             "business_location",
             "business_description",
             "business_logo",
-            "business_website",
         )}),
-
+        (_("Contact Information"), {"fields": ("business_email", "phone_number", "business_website")}),
         (_("Important Dates"), {"fields": ("created", "modified")}),
     )
     # list_filter = [

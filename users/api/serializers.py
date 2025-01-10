@@ -16,6 +16,8 @@ class UserBusinessProfileSerializer(serializers.ModelSerializer):
             'user',
             'rating',
             'workspace',
+            "phone_number",
+            "business_email",
             'business_name',
             'business_logo',
             'business_website',
