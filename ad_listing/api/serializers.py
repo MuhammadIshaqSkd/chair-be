@@ -43,6 +43,8 @@ class AdListingSerializer(serializers.ModelSerializer):
         read_only_fields = [
             'id',
             'rating',
+            'total_ratings',
+            'total_reviews',
         ]
     def to_representation(self, instance):
         data = super().to_representation(instance)
