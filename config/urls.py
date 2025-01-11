@@ -25,8 +25,9 @@ from Utils.defualt_route import HealthCheckAPIView
 from auths.admin import custom_admin_site
 
 urlpatterns = [
-    path('admin/', custom_admin_site.urls),
-    path("", HealthCheckAPIView.as_view()),
+    path('', custom_admin_site.urls),
+    path('chair-admin/', admin.site.urls),
+    path("health-check/", HealthCheckAPIView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 # API URLS
 urlpatterns += [
