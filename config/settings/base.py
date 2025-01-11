@@ -237,6 +237,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/5.1/topics/i18n/
 
 AUTH_USER_MODEL = 'auths.User'
+LOGIN_REDIRECT_URL = '/'
 
 LANGUAGE_CODE = 'fr'
 
