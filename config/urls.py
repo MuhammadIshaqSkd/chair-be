@@ -25,7 +25,7 @@ from Utils.defualt_route import HealthCheckAPIView
 from auths.admin import custom_admin_site
 
 urlpatterns = [
-    path('/', custom_admin_site.urls),
+    path('', custom_admin_site.urls),
     # path('chair-admin/', admin.site.urls),
     path("health-check/", HealthCheckAPIView.as_view()),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
@@ -35,7 +35,7 @@ urlpatterns += [
     urls(r'^media/(?P<path>.*)$', serve, {'document_root': settings.MEDIA_ROOT}),
     urls(r'^static/(?P<path>.*)$', serve, {'document_root': settings.STATIC_ROOT}),
     # API base url
-    path("api/", include("config.api_router")),
+    path("/api/", include("config.api_router")),
     # DRF auth token
     path("api/schema/", SpectacularAPIView.as_view(), name="api-schema"),
     path(
