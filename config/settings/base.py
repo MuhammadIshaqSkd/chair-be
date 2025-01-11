@@ -277,7 +277,7 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
     # Logo to use for your site, must be present in static files, used for brand on top left
     "site_logo": "img/logo_dark2.png",
     # Relative path to logo for your site, used for login logo (must be present in static files. Defaults to site_logo)
-    "login_logo": "img/logo.png",
+    "login_logo": "img/login_logo.png",
     # Logo to use for login form in dark themes (must be present in static files. Defaults to login_logo)
     "login_logo_dark": "img/logo_dark.png",
     # CSS classes that are applied to the logo
