@@ -28,7 +28,7 @@ router.register(r'ad-listing', AdListingViewSet, basename='ad-listing')
 router.register(r'request-review', RequestReviewView, basename='request-review')
 
 router.register(r'conversation-list', ConversationViewSet, basename='conversation-list')
-router.register(r'message-list', MessageViewSet, basename='message-list')
+router.register(r'message', MessageViewSet, basename='message-list')
 
 
 # URL Patterns

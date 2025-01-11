@@ -25,7 +25,7 @@ from users.api.serializers import (
     MessageSerializer,
     ConversationSerializer,
     UserAccountTypeSerializer,
-    UserBusinessProfileSerializer,
+    UserBusinessProfileSerializer, SendMessageSerializer,
 )
 from users.helper import mark_messages_as_read
 
@@ -172,3 +172,17 @@ class MessageViewSet(viewsets.GenericViewSet):
         if page:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @staticmethod
+    def create(request, *args, **kwargs):
+        try:
+            serializer = SendMessageSerializer(data=request.data, context={'request': request})
+            if serializer.is_valid():
+                message_instance = serializer.save()
+                return Response(
+                    {"message": "Sent successfully", "message_id": message_instance.id},
+                    status=status.HTTP_201_CREATED
+                )
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except Exception as e:
+            return Response(e, status=status.HTTP_400_BAD_REQUEST)

@@ -1,3 +1,4 @@
+from django.db.models import Q
 from rest_framework import serializers
 
 from auths.models import (
@@ -86,7 +87,11 @@ class MessageSerializer(serializers.ModelSerializer):
             'sender_name',
             'sender_profile_img'
         ]
-        read_only_fields = ['id', 'created', 'modified']
+        read_only_fields = [
+            'id',
+            'created',
+            'modified'
+        ]
 
     def get_message_type(self, obj):
         request_user = self.context.get('request').user
@@ -100,6 +105,64 @@ class MessageSerializer(serializers.ModelSerializer):
     def get_sender_profile_img(obj):
         return obj.sender.profile_photo.url if obj.sender.profile_photo else None
 
+
+class SendMessageSerializer(serializers.ModelSerializer):
+    receiver_user = serializers.IntegerField()
+    content = serializers.CharField(max_length=255)
+
+    class Meta:
+        model = Message
+        fields = ['receiver_user', 'content']
+
+    @staticmethod
+    def validate_receiver_user(receiver_user):
+        """
+        Validate that the receiver user exists in the system.
+        """
+        try:
+            user = User.objects.get(id=receiver_user)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Receiver user does not exist.")
+        return user
+
+    def validate(self, attrs):
+        """
+        Perform any additional cross-field validations here.
+        """
+        user = self.context['request'].user
+        if user.id == attrs['receiver_user'].id:
+            raise serializers.ValidationError("You cannot send a message to yourself.")
+        return attrs
+
+    def create(self, validated_data):
+        """
+        Create a new message and handle conversation creation if it doesn't already exist.
+        """
+        user = self.context['request'].user
+        receiver_user = validated_data['receiver_user']
+        content = validated_data['content']
+
+        # Check if a conversation exists
+        conversation = Conversation.objects.filter(
+            Q(freelancer=user) | Q(owner=user),
+            Q(freelancer=receiver_user) | Q(owner=receiver_user)
+        ).first()
+
+        if not conversation:
+            # Create a new conversation
+            conversation = Conversation.objects.create(
+                freelancer=user,
+                owner=receiver_user
+            )
+
+        # Create the message
+        message = Message.objects.create(
+            conversation=conversation,
+            sender=user,
+            content=content
+        )
+
+        return message
 
 class ConversationSerializer(serializers.ModelSerializer):
     unread_count = serializers.SerializerMethodField()
