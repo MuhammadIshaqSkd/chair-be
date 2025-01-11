@@ -21,8 +21,8 @@ class UserBusinessProfileSerializer(serializers.ModelSerializer):
             'business_name',
             'business_logo',
             'business_website',
-            'business_location',
-            'business_description',
+            'location',
+            'description',
         ]
         read_only_fields = ['id', 'user', 'rating']
 

@@ -283,7 +283,7 @@ JAZZMIN_SETTINGS: Dict[str, Any] = {
     # CSS classes that are applied to the logo
     "site_logo_classes": None,
     # Relative path to a favicon for your site, will default to site_logo if absent (ideally 32x32 px)
-    # "site_icon": "books/img/icon.png",
+    "site_icon": "img/logo_dark.png",
     # Welcome text on the login screen
     "welcome_sign": "Bienvenue sur le portail d'administration du fauteuil",
     # Copyright on the footer

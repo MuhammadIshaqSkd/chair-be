@@ -1,4 +1,6 @@
 from django.contrib import admin
+from django import forms as form
+from django.contrib.admin import forms
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 from django.contrib.auth.admin import UserAdmin as BaseUserAdmin
@@ -92,7 +94,22 @@ class UserAdmin(BaseUserAdmin):
     ]
 
 
+class UserBusinessProfileAdminForm(form.ModelForm):
+    class Meta:
+        model = UserBusinessProfile
+        fields = '__all__'
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Remove "Add" and "View" buttons for the user field
+        self.fields['user'].widget.can_add_related = False
+        self.fields['user'].widget.can_change_related = False
+        self.fields['user'].widget.can_view_related = False  # Hide the "View" button
+
+
 class UserBusinessProfileAdmin(admin.ModelAdmin):
+    form = UserBusinessProfileAdminForm
+
     list_display = [
         'id',
         'user',
@@ -105,8 +122,8 @@ class UserBusinessProfileAdmin(admin.ModelAdmin):
             "user",
             "rating",
             "business_name",
-            "business_location",
-            "business_description",
+            "location",
+            "description",
             "business_logo",
         )}),
         (_("Contact Information"), {"fields": ("business_email", "phone_number", "business_website")}),
