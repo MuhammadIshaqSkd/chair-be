@@ -105,6 +105,41 @@ class MessageSerializer(serializers.ModelSerializer):
     def get_sender_profile_img(obj):
         return obj.sender.profile_photo.url if obj.sender.profile_photo else None
 
+class CheckConversationSerializer(serializers.Serializer):
+    receiver_user = serializers.IntegerField()
+
+    def validate_receiver_user(self, receiver_user):
+        """
+        Validate if the receiver user exists in the system.
+        """
+        try:
+            user = User.objects.get(id=receiver_user)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("Receiver user does not exist.")
+        return user
+
+    def to_representation(self, instance):
+        """
+        Customize the response payload.
+        """
+        user = self.context['request'].user
+        receiver_user = self.validated_data['receiver_user']
+
+        # Check if conversation exists
+        conversation_query = Conversation.objects.filter(
+            Q(freelancer=user, owner=receiver_user) |
+            Q(freelancer=receiver_user, owner=user)
+        ).first()
+
+        return {
+            "conversation_id": conversation_query.id if conversation_query else None,
+            "is_exists": bool(conversation_query),
+            "receiver_details": {
+                "full_name": f"{receiver_user.full_name}",
+                "profile_image": receiver_user.profile_photo.url if hasattr(receiver_user, 'profile_photo') and receiver_user.profile_photo else None
+
+            },
+        }
 
 class SendMessageSerializer(serializers.ModelSerializer):
     receiver_user = serializers.IntegerField()

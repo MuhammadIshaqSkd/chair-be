@@ -6,6 +6,7 @@ from rest_framework import (
     viewsets,
     permissions,
 )
+from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.generics import (
     ListAPIView,
@@ -25,7 +26,7 @@ from users.api.serializers import (
     MessageSerializer,
     ConversationSerializer,
     UserAccountTypeSerializer,
-    UserBusinessProfileSerializer, SendMessageSerializer,
+    UserBusinessProfileSerializer, SendMessageSerializer, CheckConversationSerializer,
 )
 from users.helper import mark_messages_as_read
 
@@ -130,6 +131,16 @@ class ConversationViewSet(viewsets.GenericViewSet):
         if page:
             return self.get_paginated_response(serializer.data)
         return Response(serializer.data, status=status.HTTP_200_OK)
+
+    @action(detail=False, methods=['post'], url_path='check-conversation')
+    def check_conversation(self, request):
+        """
+        Check if a conversation exists between the authenticated user and a receiver.
+        """
+        serializer = CheckConversationSerializer(data=request.data, context={'request': request})
+        serializer.is_valid(raise_exception=True)
+        response_data = serializer.to_representation(None)
+        return Response(response_data, status=status.HTTP_200_OK)
 
 
 @extend_schema(tags=['User Inbox Messages'])
