@@ -7,20 +7,16 @@ from rest_framework import (
     permissions,
 )
 from rest_framework.decorators import action
-from rest_framework.response import Response
 from rest_framework.generics import (
     ListAPIView,
     UpdateAPIView,
 )
+from rest_framework.response import Response
 
 from ad_listing.helper import CustomPagination
 from auths.models import (
     User,
     UserBusinessProfile,
-)
-from users.models import (
-    Message,
-    Conversation,
 )
 from users.api.serializers import (
     MessageSerializer,
@@ -29,6 +25,10 @@ from users.api.serializers import (
     UserBusinessProfileSerializer, SendMessageSerializer, CheckConversationSerializer,
 )
 from users.helper import mark_messages_as_read
+from users.models import (
+    Message,
+    Conversation,
+)
 
 
 # Create your views here.
@@ -67,8 +67,9 @@ class UpdateUserAccountTypeView(UpdateAPIView, ListAPIView):
             status=status.HTTP_200_OK
         )
 
-@extend_schema(tags=['User-Rental Profile'])
-class UserRentalProfileViewSet(viewsets.GenericViewSet):
+
+@extend_schema(tags=['Space Owner Profile'])
+class UserOwnerProfileViewSet(viewsets.GenericViewSet):
     permission_classes = [permissions.IsAuthenticated]
     serializer_class = UserBusinessProfileSerializer
 

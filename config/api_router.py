@@ -1,6 +1,6 @@
 from django.conf import settings
-from django.views.static import serve
 from django.urls import path, re_path
+from django.views.static import serve
 from rest_framework.routers import DefaultRouter
 
 from ad_listing.api.views import (
@@ -14,7 +14,7 @@ from auths.api.views import (
     UserRetrieveUpdateAPIView,
 )
 from users.api.views import (
-    UserRentalProfileViewSet,
+    UserOwnerProfileViewSet,
     UpdateUserAccountTypeView,
     ConversationViewSet,
     MessageViewSet,
@@ -22,7 +22,7 @@ from users.api.views import (
 
 # Router setup
 router = DefaultRouter()
-router.register(r'rental-profile', UserRentalProfileViewSet, basename='user-rental-profile')
+router.register(r'owner-profile', UserOwnerProfileViewSet, basename='user-rental-profile')
 router.register(r'rental-request', RentalRequestView, basename='rental-request')
 router.register(r'ad-listing', AdListingViewSet, basename='ad-listing')
 router.register(r'request-review', RequestReviewView, basename='request-review')
