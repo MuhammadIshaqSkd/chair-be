@@ -54,8 +54,15 @@ class User(AbstractUser):
         ('Freelancer', 'Freelancer'),
         ('Owner', 'Owner'),
     )
+    PROFESSION_TYPE = (
+        ('barber', _('Barber')),
+        ('beauticians', _('Beauticians')),
+        ('hair-dresser', _('Hair Dresser')),
+        ('tattoo-artists', _('Tattoo Artists'))
+    )
+
     email = models.EmailField(_("Email"), unique=True)
-    profession = models.CharField(_("Profession"), max_length=255, null=True, blank=True)
+    profession = models.CharField(_("Profession"), max_length=255, choices=PROFESSION_TYPE)
     normalized_email = models.EmailField(_("Normalized Email"), unique=True, blank=True)
     password = models.CharField(_("Mot de passe"), max_length=256)
     username = models.CharField(_("Nom d'utilisateur"), max_length=150, null=True, blank=True)

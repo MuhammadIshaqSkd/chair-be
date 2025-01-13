@@ -43,6 +43,7 @@ class UserSerializer(serializers.ModelSerializer):
         fields = [
             "id",
             "email",
+            "profession",
             "full_name",
             "is_active",
             "profession",
@@ -108,7 +109,8 @@ class MessageSerializer(serializers.ModelSerializer):
 class CheckConversationSerializer(serializers.Serializer):
     receiver_user = serializers.IntegerField()
 
-    def validate_receiver_user(self, receiver_user):
+    @staticmethod
+    def validate_receiver_user(receiver_user):
         """
         Validate if the receiver user exists in the system.
         """

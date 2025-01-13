@@ -17,6 +17,10 @@ class CustomAdminSite(admin.AdminSite):
         # Add your custom context
         extra_context['total_users'] = User.objects.count()
         extra_context['active_users'] = User.objects.filter(is_active=True).count()
+        extra_context['total_barber'] = User.objects.filter(profession__icontains='barber').count()
+        extra_context['total_dresser'] = User.objects.filter(profession__icontains='dresser').count()
+        extra_context['total_beauticians'] = User.objects.filter(profession__icontains='beauticians').count()
+        extra_context['total_tattoo_artists'] = User.objects.filter(profession__icontains='tattoo-artists').count()
         extra_context['total_owner_profiles'] = UserBusinessProfile.objects.count()
 
         return super().index(request, extra_context=extra_context)
